@@ -10,44 +10,94 @@ import org.openqa.selenium.Keys;
 public class HillelTest {
 
     @Test
-    public void homePageTest() {
+    public void canLogin() {
         WebDriverManager.chromedriver().setup();
 
-        Selenide.open("https://next.privat24.ua/money-transfer/card");
+        HomePage homePage = new HomePage();
+        homePage.openPage();
 
-        Selenide.$("[data-qa-node='numberdebitSource']").sendKeys("4552331448138217");
-        Selenide.$("[data-qa-node='expiredebitSource']").sendKeys("0425");
-        Selenide.$("[data-qa-node='cvvdebitSource']").sendKeys("926");
-        Selenide.$("[data-qa-node='firstNamedebitSource']").sendKeys("ivan");
-        Selenide.$("[data-qa-node='lastNamedebitSource']").click();
-        Selenide.$("[data-qa-node='lastNamedebitSource']").sendKeys("ivanov");
+        LoginFormPage loginFormPage = homePage.header.openLoginModal();
+        GaragePage garagePage = loginFormPage.authorise(
+                "orehokolka@ukr.net",
+                "NF7e21dXNZzwB3D");
 
-        Selenide.$("[data-qa-node='numberreceiver']").click();
-        Selenide.$("[data-qa-node='numberreceiver']").sendKeys("4004159115449003");
-        Selenide.$("[data-qa-node='firstNamereceiver']").click();
-        Selenide.$("[data-qa-node='firstNamereceiver']").sendKeys("taras");
-        Selenide.$("[data-qa-node='firstNamereceiver']").click();
-        Selenide.$("[data-qa-node='lastNamereceiver']").sendKeys("tarasov");
+        garagePage.header.userMenu.shouldBe(Condition.visible);
+        garagePage.sideMenu.garageIcon.shouldBe(Condition.visible);
+        garagePage.alertSuccess.shouldBe(Condition.visible);
+    }
 
-        Selenide.$("[data-qa-node='amount']").click();
-        Selenide.$("[data-qa-node='amount']").sendKeys("123");
-        Selenide.$("[data-qa-node='currency']").click();
-        Selenide.$("[data-qa-value='USD']").click();
+    @Test
+    public void canLogoutHeader() {
+        WebDriverManager.chromedriver().setup();
 
-        Selenide.$("[class='sc-VigVT hcHAAV']").click();
+        HomePage homePage = new HomePage();
+        homePage.openPage();
 
-        //проверка
+        LoginFormPage loginFormPage = homePage.header.openLoginModal();
+        GaragePage garagePage = loginFormPage.authorise(
+                "orehokolka@ukr.net",
+                "NF7e21dXNZzwB3D");
 
-        Selenide.$("[data-qa-node='payer-card']").shouldHave(Condition.text("4552 3314 4813 8217"));
-        Selenide.$("[data-qa-node='payer-amount']").shouldHave(Condition.text("123 USD"));
-        Selenide.$("[data-qa-node='payer-currency']").shouldHave(Condition.text("5.41 USD"));
-        Selenide.$("[data-qa-node='receiver-name']").shouldHave(Condition.text("TARAS TARASOV"));
-        Selenide.$("[data-qa-node='receiver-card']").shouldHave(Condition.text("4004 1591 1544 9003"));
-        Selenide.$("[data-qa-node='receiver-amount']").shouldHave(Condition.text("123 USD"));
-        Selenide.$("[data-qa-node='receiver-currency']").shouldHave(Condition.text("0 USD"));
-        Selenide.$("[class='sc-chPdSV iiqwfv']").shouldHave(Condition.text("128.41 USD"));
+        DropdownMenuPage dropdownMenuPage = homePage.header.openDropdownMenu();
+        dropdownMenuPage.LogoutBtn.click();
 
-        Selenide.$("[data-qa-node='submit']").click();
+        homePage.header.signInBtn.shouldBe(Condition.visible);
+        homePage.header.guestLogin.shouldBe(Condition.visible);
+        homePage.SignUpBTN.shouldBe(Condition.visible);
 
-        }
+    }
+
+
+    @Test
+    public void canLogOutSideMenu() {
+        WebDriverManager.chromedriver().setup();
+
+        HomePage homePage = new HomePage();
+        homePage.openPage();
+
+        LoginFormPage loginFormPage = homePage.header.openLoginModal();
+        GaragePage garagePage = loginFormPage.authorise(
+                "orehokolka@ukr.net",
+                "NF7e21dXNZzwB3D");
+
+        SideMenu sideMenu = new SideMenu();
+        sideMenu.LogOutIcon.click();
+
+        homePage.header.signInBtn.shouldBe(Condition.visible);
+        homePage.header.guestLogin.shouldBe(Condition.visible);
+        homePage.SignUpBTN.shouldBe(Condition.visible);
+
+    }
+
+
+    @Test
+    public void canAddCar() {
+        WebDriverManager.chromedriver().setup();
+
+        HomePage homePage = new HomePage();
+        homePage.openPage();
+
+        LoginFormPage loginFormPage = homePage.header.openLoginModal();
+        GaragePage garagePage = loginFormPage.authorise(
+                "orehokolka@ukr.net",
+                "NF7e21dXNZzwB3D");
+
+        GaragePage garagePage1 = new GaragePage();
+        garagePage.AddCarBtn.click();
+
+        AddCarFormPage addCarFormPage = new AddCarFormPage();
+        addCarFormPage.MileageInput.sendKeys(
+                "1"
+        );
+        addCarFormPage.AddBtn.click();
+
+        garagePage.GarageName.shouldBe(Condition.visible);
+        garagePage.NameAuto.shouldHave(Condition.text("Audi TT"));
+        garagePage.MileageUpdate.shouldBe(Condition.visible);
+
+    }
+
 }
+
+
+
